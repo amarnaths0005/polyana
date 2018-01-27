@@ -1,0 +1,66 @@
+1. Introduction
+---------------
+This document is about verify_unfold.f90. POLYANA manual is in ../doc directory
+verify_unfold.f90 is a simple program to verify the unfolding algorithm used in
+polyana to handle molecules of arbitrary topology subjected to Periodic Boundar
+y Conditions. The algorithm is shown to work correctly when the molecular sizes
+do not exceed half the simulation cell length (or half its shorted dimension).  
+
+2. What it does
+---------------
+The program generates arbitrary molecular topologies by placing a number of ato
+ms at various points within a sphere of a given radius. Also, the masses of the
+'atoms' are picked at random from a preset range of values. 
+Then, two such 'molecules' are placed at a fixed distance of 15 Angstroem apart
+and their mutual orientation is subjected to random changes. The generated conf
+igurations are recorded in a HISTORY-like file; the appropriate CONTROL and FIE
+LD files are also generated. Polyana can read these files.  
+The RDF output file will have three columns because the molecules are, in gener
+al, of different kind. The column of interest is the third one (the other two w
+ill contain zeros since there is just one molecule of each kind). In the third 
+column there should be just one peak at the distance of 15 A all other entries 
+equal to zero. The algorithm breaks down if and only if the molecular size (her
+e, radius of the sphere where 'atoms' are placed) exceeds 0.5 of minimum simula
+tion cell length.
+
+3. Usage
+--------
+The program uses GNU Fortran's random number generator subroutine RANDOM_NUMBER
+If you use another compiler, edit that part of the program accordingly. The exe
+cutable accepts two arguments: number of atoms in each molecule and radius of e
+ach molecule, e.g.:
+
+			./a.out    30    14.0
+
+Therefore both molecules have the same number of atoms and 'size' but in all ot
+her respects (topology and kind of atoms reflected in their random masses) they
+are completely different. The interested users can try and generalise the progr
+am so it generates molecules of different number of atoms and different sizes. 
+The box size is fixed to 60 Angstroem, so the algorithm will work until a molec
+ular radius of 15 A because its size (i.e. diameter) will be 2 x 15=30=half box
+The maximum atomic mass is 32 and the molecules are placed 15 Ang. apart. The g
+enerated CONTROL file contains a polyana directive setting rmax to 16 Ang. 
+
+!
+! Copyright (c) 2015-2018 Vasilios E. Raptis <polyana.software@gmail.com>
+!
+! Permission is hereby granted, free of charge, to any person obtaining a copy
+! of this software and associated documentation files (the "Software"), to deal
+! in the Software without restriction, including without limitation the rights
+! to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+! copies of the Software, and to permit persons to whom the Software is
+! furnished to do so, subject to the following conditions:
+!
+! The above copyright notice and this permission notice shall be included in
+! all copies or substantial portions of the Software.
+!
+! THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+! IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+! FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+! AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+! LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+! OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+! THE SOFTWARE.
+!
+!-----------------------------------------------------------------------
+!

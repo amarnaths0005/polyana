@@ -1,0 +1,12 @@
+Some test cases copied from the DL_POLY 2.17 distribution. 
+
+TEST7   - Biphenyl molecule rotation. 144 atoms.
+TEST9   - Surfactant+H2O using Ewald method. 2658 atoms.
+TEST13  - Carbon Buckytube with Tersoff potential. 800 atoms.
+TEST17  - Sodium ion in SPC water. 421 sites
+TEST18  - Sodium chloride molecule in SPC water (constraints). 419 sites.
+TEST20  - Dibenzene linked rigid molecules. Multiple descriptions. 1782 sites.
+
+The following system was used as an example in Dimitroulis et al., Comp. Phys. Comm. 197 (2015) 220-226
+
+TESTHEX - Liquid n-hexane united-atom system. 1932 sites. 
