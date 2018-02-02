@@ -26,7 +26,7 @@ for i in `ls -d test*`
 do
 	cd $i
     rm -f HISTORY polyana.out OUTPUT POP RDF RDFDAT REVCON REVIVE \
-          STATIS TABLE ZDEN ZDNDAT STDOUT
+          STATIS STDOUT TABLE ZDEN ZDNDAT 
 	cd ..
 done
 

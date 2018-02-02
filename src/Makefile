@@ -31,9 +31,9 @@ options    =-cpp -fopenmp -fbounds-check
 #options    =-cpp -fopenmp -fbounds-check -DSTREAMS
 # use this if your compiler is not 2003-compliant: 
 # options   =-cpp -DFORTRAN95
-objects    = Akima.o atoms.o groups.o molecules.o parameters.o polyana.o \
+objects    = atoms.o groups.o molecules.o parameters.o polyana.o \
              process.o strings.o system.o utilities.o
-modules    = akima.mod atoms.mod groups.mod molecules.mod parameters.mod \
+modules    = atoms.mod groups.mod molecules.mod parameters.mod \
              process.mod strings.mod system.mod          
           
 # target for the executable
@@ -46,13 +46,12 @@ $(objects): %.o: %.f90
 	$(compiler) -c $(options) $< -o $@
 
 # dependencies for the project files
-Akima.o      :  
 atoms.o      :  parameters.o    
 groups.o     :  molecules.o strings.o
 molecules.o  :  atoms.o   
 parameters.o :       
 polyana.o    :  process.o    
-process.o    :  Akima.o system.o 
+process.o    :  system.o 
 strings.o    :     
 system.o     :  molecules.o groups.o strings.o
 utilities.o  :
