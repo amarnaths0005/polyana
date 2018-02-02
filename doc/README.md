@@ -61,8 +61,6 @@ In a nutshell:
 * Radial distribution functions  calculated over distances  well beyond half the
   simulation cell length.  
   
-* Akima interpolation of radial distribution functions.  
-
 * Stream processing or 'on the fly' mode.  
 
 * OpenMP parallelism.  
@@ -80,35 +78,34 @@ such definition in FIELD. As regards the distance over which radial distribution
 functions extend, POLYANA relies on an observation by Theodorou and Suter (in *J. 
 Chem. Phys.*, **1985**, *82*, 955)  so as to extend the calculation  beyond half 
 the shortest simulation cell length by computing the correct differential volume 
-with distance. Also, the bin width can be relatively increased  and intermediate 
-points can be calculated using aid of Akima interpolation. As a means of tighter 
-integration with DL\_POLY, POLYANA can be combined it in the style of Unix pipes 
-to allow 'on the fly' processing  of MD trajectories (to do this DL\_POLY has to 
-be minimally modified and rebuilt so that it directs trajectory data to standard 
-output instead of writing a HISTORY file). Finally, POLYANA allows multithreaded 
-(OpenMP) parallel execution.  Users can compare time measurements displayed with 
-the end of the calculations to check performance with number of threads.  
+with distance.  As a means of tighter integration with DL\_POLY,  POLYANA can be 
+combined with it in the style of Unix pipes to allow 'on the fly' processing  of 
+MD trajectories (to do this DL\_POLY has to be minimally modified and rebuilt so 
+that it directs trajectory data to standard output  instead of writing a HISTORY 
+file). Finally, POLYANA allows multithreaded (OpenMP) parallel execution.  Users 
+can compare time measurement displayed with the end of the calculations to check 
+performance with number of threads.  
 
 
 ### Requirements
 The below list (as well as most part of this document) is relevant to UNIX/Linux 
-systems, but it should be fairly easy to port the project to other environments.
+systems, but it should be fairly easy to port the project to other environments;
+to build and run POLYANA, one needs: 
 
 *  gfortran or other modern Fortran compiler  (please, edit Makefile as needed). 
    If your compiler  does not comply with Fortran2003 standard,  use alternative 
    option indicated in the Makefile. 
    
-*  This is a small project and one can try and compile the source code manually. 
-   If make is available, it will just make your life a little easier.
+*  make; POLYANA is a small project  and one can try and compile the source code 
+   manually. If make is available, it will just make your life a little easier.
    
 *  Since this is a post-processing tool,  DL\_POLY itself is not needed to build
    POLYANA unless you want to run the tests - see Section 2. Of course, you need 
    DL\_POLY output files to process! 
 
-*  The test *bash* scripts have worked on various Linux platforms. *sh* versions 
-   of the *run* and *clean* scripts in the test directory should also execute on 
-   most Unix/Linux platforms.  The Fortran code itself should compile and run on 
-   any platform with an appropriate compiler.
+*  bash shell; the *bash* scripts in test directory have worked on various Linux 
+   platforms.The Fortran code itself should compile and run on any platform with 
+   an appropriate compiler.
 
 *  Finally, the *rdfplot* companion script calls *gnuplot* to plot output files.
    This is not a strict requirement;  POLYANA output is very simple so users can
@@ -121,9 +118,9 @@ This is straightforward. Just type
 
     make
 
-and press Enter.  An executable called 'polyana'  will be generated in the *bin* 
+and press Enter.  An executable called *polyana*  will be generated in the *bin* 
 subdirectory of the project folder; you can move it to any location specified in 
-your $PATH environment variable.  To build POLYANA *and* run the tests in 'test' 
+your $PATH environment variable.  To build POLYANA *and* run the tests in *test* 
 subfolder, type:
 
     make test
@@ -145,10 +142,10 @@ POLYANA will run in the background and all its messages  will be redirected to a
 file named 'polyana.out', in each test subdirectory. The g(r) output, of course, 
 will be found in the corresponding RDF files (see next Section).  
 
-Alternatively, you can go to the test directory and launch the 'run' script from 
+Alternatively, you can go to the test directory and launch the *run* script from 
 there, assuming POLYANA executable is already therein (and DL\_POLY is installed 
 in your system!), so if you haven't yet,  copy POLYANA to test now.  To run the 
-'run' script you must supply some arguments. Here is how:  
+*run* script you must supply some arguments. Here is how:  
  
     ./run   [no arguments]
 
@@ -183,7 +180,7 @@ The last -and most obvious- choice is to change to any test subdirectory and run
 DL\_POLY and POLYANA 'manually'.  
 
 Finally, to 'clean' the test subdirs i.e. remove all DL_POLY and POLYANA output, 
-just run the 'clean' script  (after chmod-ing to executable)  from the test dir. 
+just run the *clean* script  (after chmod-ing to executable)  from the test dir. 
 This is also invoked when you run 'make clean' from the source directory.  
 
 ## 3. How to run POLYANA - the simple way 
@@ -233,24 +230,24 @@ All POLYANA directives are listed below in alphabetical order:
 
     Directive     | Description
     ---           | ---
-    dr            | Distance bin for the histograms in g(r) calculations
+    dr *d*        | Distance bin for the histograms in g(r) calculations
     end polyana   | Marks the end of a section of POLYANA directives
-    every [n]     | Calculate every n-th step (time saver for long trajectories)
-    group         | Compute g(r) for user-defined groups rather than molecules
-    omp           | Sets the number of OpenMP threads
-    pbc           | Sets periodic boundary conditions to one of the following:
+    every *n*     | Calculate every n-th step (time saver for long trajectories)
+    group [total] | Compute g(r) for user-defined groups rather than molecules
+    omp  *n*      | Sets the number of OpenMP threads
+    pbc  *n*         | Sets periodic boundary conditions to one of the following:
         0         | no pbc's 
         1         | cubic
         2         | orthorhombic
         3         | parallelepiped
         6         | slab
     polyana       | Marks the beginning of section containing POLYANA directives
-    rmax          | Maximum distance for g(r) calculations
+    rmax *r*      | Maximum distance for g(r) calculations
     smooth        | Smooth g(r) as in Allen & Tildesley, 1989, pp. 203-204
-    start [n]     | Skip steps 1 to n-1 and process from n-th and beyond
-    stop  [n]     | Skip (don't process) configurations beyond the n-th
-    threads       | A synonym for 'omp'
-    total         | Used together with *group* to include intramolecular pairs
+    start *n*     | Skip steps 1 to n-1 and process from n-th and beyond
+    stop  *n*     | Skip (don't process) configurations beyond the n-th
+    threads *n*   | A synonym for 'omp'
+    total         | Optional argument of *group* to include intramolecular pairs
     width         | A synonym for 'dr'
 
 Launching the every *n* command will cause POLYANA to compute pair distances and 
@@ -262,11 +259,11 @@ the one in the HISTORY file.
 
 POLYANA directives are case insensitive:  start, START and Start are equivalent. 
 Any number of spaces  can be inserted before a directive or  between a directive 
-keyword and its numerical argument.  The 'polyana'  and 'end polyana' lines must 
+keyword and its numerical argument.  The *polyana*  and *end polyana* lines must 
 exist and enclose the other lines  if directives are to be used.  If some or all 
 directives are missing (see: 'run the simple way', Section 2) the default values 
 will be used instead; same goes for missing directive arguments (all of them are 
-optional). All default values are summarised belowe:  
+optional). All default values are summarised below:  
 
     Directive     | Default value
     ---           | ---
@@ -306,10 +303,9 @@ POLYANA reads the first cell in the trajectory file, computes the number of bins
 by dividing the above computed rmax by the bin width and allocates memory to the 
 histogram arrays used in RDF calculations. If the trajectory was computed in the 
 NPT ensemble where the simulation varies with time POLYANA will keep reading all 
-subsequent cell vectors and with each new step,  *r*|-max will be updated as the 
+subsequent cell vectors and with each new step,  *r*\-max will be updated as the 
 minimum of its current and new value ( thus discarding a few elements at the end 
-of the histogram arrays).   
-
+of the histogram arrays).  
 
 ### Example of using directives
 Suppose we ran a MD simulation and saved 6000 configurations. Of them, the first 
@@ -351,10 +347,10 @@ alcohol. To address problems of this kind, we have to do the following:
    
 Group definitions obey the following general syntax:  
         
-        (...([char] [int] [int]) [...([char] [int] [int])] [int] ) [(...)]
+        (...(char int int) [...(char int int)] int ) [(...)]
         
 where outter square brackets, [...], indicate optional arguments. In particular, 
-a molecule is divided into groups, defined thus:  
+a molecule is divided into groups, defined like so:  
 
                            (grouptype nat  nrep) 
         
@@ -373,7 +369,7 @@ This pattern can be applied recursively  to define large structures of arbitrary
 complexity. Group definitions are placed in the ATOM directives of corresponding 
 molecular types in FIELD file, after the number of atoms, like this: 
         
-                    ATOMS [int] [group-definitions]
+                    ATOMS int group-definitions
         
 If a molecule is to be divided into groups,  these must be defined such that all 
 atoms belong to one of the groups and the sum of atoms in all repeated groups be 
@@ -382,7 +378,13 @@ equal to the argument of the ATOM keyword.
 It is reminded that *group* directive should also be inserted in CONTROL for the
 above definitions to take effect, otherwise they will be ignored so POLYANA will
 fall back to its default behaviour and calculate molecular functions. Lastly, it
-is noted that *total* directive is ignored when *group* is missing.  
+is noted that *group* admits an optional argument, namely *total*, to modify its 
+function. Without it, intermolecular radial distribution functions are computed; 
+otherwise, all group pairs, whether intra- or intermolecular, will be taken into 
+account. In the latter case,  bonded pairs will give rise to sharp peaks typical 
+of bonds, bond angles and dihedral angles - if they exist.  This is not the case 
+with DL\_POLY which excludes bonded atom-atom pairs from similar calculations in 
+its RDFDAT output files.  
 
 #### Examples: single compounds
         
@@ -495,7 +497,7 @@ Likewise, to calculate g(r) and density profile for the alkyl tail, we rewrite:
 
 Of note, this trick calculates **inter**-molecular radial distribution functions 
 of user-defined groups  while results obtained by *group*  combined with *total* 
-directive, include all such pairs in the system. For a thorough discussion on the 
+argument, include all such pairs in the system. For a thorough discussion on the 
 topic, the reader is referred to our first publication introducing POLYANA  (see 
 references, Section 10).  As another example, assuming that we look at geometric 
 centres rather than centres of mass of the molecules,  we simply set atom masses 
@@ -530,7 +532,7 @@ are now redirected to a file named STDOUT.
 
 The required modifications are very easy to implement:  
 
-#### DL\_POLY  
+#### DL\_POLY Classic  
 In file *setup_module.f* we set parameter *nrite* from 6 to some other value not
 associated with another file unit, e.g. 
 
@@ -619,11 +621,10 @@ added to POLYANA's quiver. The most important new functions include
 2. C. Dimitroulis, T. Raptis, V. Raptis *Comp. Phys. Commun.*, **2015**, *197*,
    220-226.  
 3. D.N. Theodorou, U.W. Suter, *J. Chem. Phys.*, **1985**, *82*, 955.  
-4. H. Akima, *J. ACM*, **1970**, *17*(4), 589-602.  
-5. M.P. Allen, D.J. Tildesley, Computer Simulation of Liquids, Oxford University 
+4. M.P. Allen, D.J. Tildesley, Computer Simulation of Liquids, Oxford University 
    Press, Oxford, 1989.  
-6. B. Chen, J. Potoff, J. Siepmann *J. Phys. Chem. B*, **2001**, *105*, 3093.  
-7. H. Berendsen, J. Grigera, T. Straatsma *J. Phys. Chem.* **1987**, *91*, 6269.  
+5. B. Chen, J. Potoff, J. Siepmann *J. Phys. Chem. B*, **2001**, *105*, 3093.  
+6. H. Berendsen, J. Grigera, T. Straatsma *J. Phys. Chem.* **1987**, *91*, 6269.  
 
 ## 10. Legal stuff, etc.
 Polyana is a program for computing molecular pair distribution functions  
@@ -689,6 +690,9 @@ Having problems or questions about this program? You are welcome to contact us:
 *   Issue concerning occasional crashes when reading FIELD file, has been fixed; 
     subsequent modifications ensured  and tests verified robust performance when 
     reading input files and resilience in cases of missing files or data.  
+    
+*   With *every n* directives, *n* must be taken into account when averaging the 
+    histograms and cell volume.      
     
     
 <pre>  

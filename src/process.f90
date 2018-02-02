@@ -24,12 +24,11 @@
 module process
     use omp_lib
     use system
-    use Akima
     implicit none
     integer nr,ngrid,nthreads,leg_moltyp,leg_at1,leg_at2
     double precision rmax, drtbl
     double precision, allocatable :: rho1(:), hist(:,:,:),pdf(:,:,:)
-    double precision, allocatable :: shell_vol(:)
+    double precision, allocatable :: shell_vol(:),ball_vol(:)
     ! some default values 
     double precision :: dr = 0.1d0       ! a 'small enough' (r,r+dr) thickness
     logical :: rmax_user_defined=.FALSE. ! flag to control rmax
@@ -211,9 +210,9 @@ contains
                 process_calc_rdf=.FALSE.
                 return
             endif
-            hist=hist/dfloat(nconf) ! average over configurations
+            hist=hist/(dfloat(nconf)/dfloat(system_get_every())) ! average over configurations
             ! average cell volume
-            volave=volave/dfloat(nconf)
+            volave=volave/(dfloat(nconf)/dfloat(system_get_every()))
             do i=1,nmol
                 a=molecule_get_type(molecule(i))
                 rho1(a)=rho1(a)+1.0d0
@@ -304,7 +303,8 @@ contains
                 if(io==RDF) then ! radial distribution functions
                     write(io,'(1X,F9.3)',advance="no") pdf(a,a,n)
                 else if(io==POP) then ! population of species b around species a 
-                    write(io,'(1X,F9.3)',advance="no") hist(a,a,n)
+                    write(io,'(1X,F9.3)',advance="no") hist(a,a,n)*(4.0d0*PI*(n*dr)**3/3.0d0) &
+                                                                  /ball_vol(n)
                 endif
             enddo
             write(io,'(3X)',advance="no")
@@ -317,7 +317,8 @@ contains
                         if(io==RDF) then ! radial distribution functions
                             write(io,'(1X,F9.3)',advance="no") pdf(a,b,n)
                         else if(io==POP) then ! population of species b around species a 
-                            write(io,'(1X,F9.3)',advance="no") hist(a,b,n)
+                            write(io,'(1X,F9.3)',advance="no") hist(a,b,n)*(4.0d0*PI*(n*dr)**3/3.0d0) &
+                                                                          /ball_vol(n)
                         endif
                     endif
                 enddo
@@ -348,14 +349,17 @@ contains
         endif
         if(allocated(shell_vol)) &
             deallocate(shell_vol)
+        if(allocated(ball_vol)) &
+            deallocate(ball_vol)
         n=1+max(nint(r_max/dr),nint(r_max_1/dr),nint(r_max_2/dr))
-        allocate(shell_vol(n))
+        allocate(shell_vol(n),ball_vol(n))
         do i=1,n
             rhi=i*dr+0.5d0*dr
             if(rhi>rmax) & ! which is either user-defined or set automatically based on PBCs and simulation cell
                 exit
             shell_vol(i)=process_sphere_vol(i*dr+0.5d0*dr,r_max,r_max_1,r_max_2) - &
                          process_sphere_vol(i*dr-0.5d0*dr,r_max,r_max_1,r_max_2)
+            ball_vol (i)=process_sphere_vol(i*dr         ,r_max,r_max_1,r_max_2)
         enddo
         return
     end subroutine process_calc_shells   
