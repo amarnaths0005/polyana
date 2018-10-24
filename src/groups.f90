@@ -64,13 +64,8 @@ contains
         implicit none
         integer io
         type (MOLECULE_T) molecule(*)
-        integer i,igtyp,j,k,nparenpair,nparenpairtot,p,q,checkparen
-        integer natmol,ngr,ngtyp,m,n,nm,nmol,ngrmol,imol,imoltyp
-        double precision charge,mass
-        character(8) grname
-        logical type_exists,ok
-        character(8), allocatable :: gtdict(:) ! group type dictionary
-        type (MOLECULE_T), allocatable :: grtmp(:)
+        integer p
+        integer natmol,nm,nmol,imol,imoltyp
         
         group_setup=.FALSE.
         rewind(io)
@@ -196,7 +191,7 @@ contains
         integer error_code
         integer natmol,ngr,ngtyp,i,chkpar,p,q,nat,nrep,nrepg,sdepth,ntype,j
         integer loop_counter(RECLEN)
-        double precision charge,mass
+        real(dblpr) charge,mass
         character(1) a,b,c
         character(8) gname
         logical type_exists
@@ -219,7 +214,7 @@ contains
                 chkpar=chkpar-1
         enddo
         if(chkpar/=0) then
-            write(mystdout,'(/T10"CONTROL or FIELD file - unmatched parentheses in following record:")')
+            write(mystdout,'(/T10,"CONTROL or FIELD file - unmatched parentheses in following record:")')
             write(mystdout,'(T10,A/)') record
             STOP
         endif                
@@ -251,7 +246,7 @@ contains
         ! Case 2: " ( ... ) ". This is a group definition
         if(b==leftparen.AND.c==rightparen) then
             if(p+1==q) then
-                write(mystdout,'(/T10"Error while reading group definition in record:"/)')
+                write(mystdout,'(/T10,"Error while reading group definition in record:"/)')
                 write(mystdout,'( T10,A)') record
                 write(mystdout,'( T10,"Stacked () parentheses"/)') 
                 STOP
@@ -261,7 +256,7 @@ contains
             if(error_code/=0) then ! try once more, this time the 'strictly recursive' definition
                 read(record(p+1:q-1),*,iostat=error_code)gname,nat
                 if(error_code/=0) then
-                    write(mystdout,'(/T10"Error while reading group definition in record:"/)')
+                    write(mystdout,'(/T10,"Error while reading group definition in record:"/)')
                     write(mystdout,'( T10,A)') record
                     write(mystdout,'( T10,"Missing essential info from () parentheses: ",A/)') record(p+1:q-1) 
                     STOP
@@ -319,7 +314,7 @@ contains
             ! This way, one can opt to use the 'strictly recursive' syntax without errors
             ! Also confusing redundant parentheses are disallowed, this way.  
             if(p+1==q) then 
-                write(mystdout,'(/T10"Error while reading repeat index in record:"/)')
+                write(mystdout,'(/T10,"Error while reading repeat index in record:"/)')
                 write(mystdout,'( T10,A)') record
                 write(mystdout,'( T10,"Stacked )) parentheses"/)') 
                 STOP
@@ -327,7 +322,7 @@ contains
             if(p+1<q) &          
                 read(record(p+1:q-1),*,iostat=error_code)nrep
             if(error_code/=0) then
-                write(mystdout,'(/T10"Error while reading repeat index in record:"/)')
+                write(mystdout,'(/T10,"Error while reading repeat index in record:"/)')
                 write(mystdout,'( T10,A)') record
                 write(mystdout,'( T10,"Missing repeat index from )) parentheses: ",A/)') record(p+1:q-1) 
                 STOP
@@ -384,7 +379,7 @@ contains
         endif
         if(natmol/=natmolread) then
             write(mystdout,&
-            '(/T10"CONTROL or FIELD file - nrs of group atoms don''t match nr of mol atoms in record:")')
+            '(/T10,"CONTROL or FIELD file - nrs of group atoms don''t match nr of mol atoms in record:")')
             write(mystdout,'(T10,A/)') record
             STOP
         endif
@@ -403,14 +398,13 @@ contains
         implicit none
         integer ndim
         integer i
-        double precision mass,charge
         type (MOLECULE_T), allocatable :: tmp(:)
         if(allocated(group)) then
             if(ndim<=size(group))then
                 write(mystdout, &
-                '(/T10"group_extend: proposed new size of ",I5," smaller than original (",I5,")"    )') &
+                '(/T10,"group_extend: proposed new size of ",I5," smaller than original (",I5,")"    )') &
                 ndim,size(group)
-                write(mystdout,'(/T10"group array remains unchanged"/)')
+                write(mystdout,'(/T10,"group array remains unchanged"/)')
                 return
             endif
             allocate(tmp(1:size(group)))
