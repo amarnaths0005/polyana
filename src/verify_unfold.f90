@@ -24,24 +24,24 @@
 program verify_unfold
     implicit none
     integer, parameter :: FIELD=9,CONFIG=10,HISTORY=11,CONTROL=12
-    double precision, parameter :: MAXMASS=32.0d0,BOX=60.0d0,distance=15.0d0
+    real(kind(1.0d0)), parameter :: MAXMASS=32.0d0,BOX=60.0d0,distance=15.0d0
     integer i,j,k,natmol
-    double precision u(3),v(3),ux(3),uy(3),uz(3),smr(3),sm,RMOL
-    double precision, allocatable :: rini(:,:,:),r(:,:,:),mass(:,:)
+    real(kind(1.0d0)) u(3),ux(3),uy(3),uz(3),smr(3),sm,RMOL
+    real(kind(1.0d0)), allocatable :: rini(:,:,:),r(:,:,:),mass(:,:)
     character(100) myarg
     
-    DOUBLE PRECISION MYRANDOM
+    real(kind(1.0d0)) MYRANDOM
     EXTERNAL MYRANDOM
     
     if (command_argument_count()>=2) then
-        call getarg(1, myarg)
+        call get_command_argument(1, myarg)
         read(myarg,'(I10)') NATMOL
-        call getarg(2, myarg)
+        call get_command_argument(2, myarg)
         read(myarg,'(F20.3)') rmol ! 'radius' of molecules
         if(4*rmol>=BOX) &
-            write(*,'(/T10"Molecules'' dimensions exceed half box length"/T10"polyana will fail"/)') 
+            write(*,'(/T10,"Molecules'' dimensions exceed half box length"/T10,"polyana will fail"/)') 
     else
-        write(*,'(/T10"usage: a.out [nr of atoms per molecule] [molecular radius]"/)')
+        write(*,'(/T10,"usage: a.out [nr of atoms per molecule] [molecular radius]"/)')
         STOP
     endif
     allocate(rini(2,3,natmol),r(2,3,natmol),mass(2,natmol))
@@ -49,15 +49,15 @@ program verify_unfold
     ! construct molecules by randomly placing atoms in sphere of radius rmol
     do j=1,2
         do i=1,natmol
-            call ranor(u,iseed)
+            call ranor(u)
             rini(j,1:3,i)=u(1:3)*RMOL
-            mass(j,i)=MAXMASS*myrandom() ! iseed) 
+            mass(j,i)=MAXMASS*myrandom() 
         enddo
     enddo
     
     ! Define rmax as directive in CONTROL file
     OPEN(UNIT=CONTROL,FILE='CONTROL')
-    write(CONTROL,'("polyana"/T4"rmax 16.0"/"end polyana")')
+    write(CONTROL,'("polyana"/T4,"rmax 16.0"/"end polyana")')
     CLOSE(CONTROL)
     
     ! write topology in FIELD file (actually, only atom masses are required)  
@@ -102,7 +102,7 @@ program verify_unfold
     do j=1,2
         do k=1,natmol
             r(j,1:3,k)=rini(j,1:3,k)
-            r(j,1,k)=r(j,1,k)+dfloat(2*j-3)*distance/2.0d0  
+            r(j,1,k)=r(j,1,k)+dble(2*j-3)*distance/2.0d0  
             r(j,1,k)=r(j,1,k)-BOX*dnint(r(j,1,k)/BOX) ! Cubic periodic boundary conditions
             r(j,2,k)=r(j,2,k)-BOX*dnint(r(j,2,k)/BOX)
             r(j,3,k)=r(j,3,k)-BOX*dnint(r(j,3,k)/BOX)
@@ -125,10 +125,10 @@ program verify_unfold
         do j=1,2
             ! first, rotate local (molecular) frame 
             ! generate random x-axis, ux (unit vector) 
-            call ranor(ux, iseed)
+            call ranor(ux)
             
             ! generate random unit vector, u
-            call ranor(u, iseed) 
+            call ranor(u) 
             
             ! define z-axis, uz=ux X u
             call uXv(ux,u,uz)
@@ -143,7 +143,7 @@ program verify_unfold
                 r(j,1,k)=dot_product(rini(j,1:3,k),ux)
                 r(j,2,k)=dot_product(rini(j,1:3,k),uy)
                 r(j,3,k)=dot_product(rini(j,1:3,k),uz)
-                r(j,1,k)=r(j,1,k)+dfloat(2*j-3)*distance/2.0d0  
+                r(j,1,k)=r(j,1,k)+dble(2*j-3)*distance/2.0d0  
                 r(j,1,k)=r(j,1,k)-BOX*dnint(r(j,1,k)/BOX) ! Cubic periodic boundary conditions
                 r(j,2,k)=r(j,2,k)-BOX*dnint(r(j,2,k)/BOX)
                 r(j,3,k)=r(j,3,k)-BOX*dnint(r(j,3,k)/BOX)
@@ -160,19 +160,18 @@ end program verify_unfold
 ! References: 
 ! 1. Allen & Tildesley: 'Molecular Simulation of Liquids', Clarendon Press, Oxford, 1989
 ! 2. Frenkel & Smit: 'Understanding Molecular Simulation', Academic Press, 1996
-subroutine ranor(v, seed) 
+subroutine ranor(v)
     implicit none
     
-    double precision v(3)
-    integer seed
-    double precision r, ran1, ran2, ranh, ransq, myrandom
+    real(kind(1.0d0)) v(3)
+    real(kind(1.0d0)) ran1, ran2, ranh, ransq, myrandom
 
     external myrandom
     
     ransq = 2.0d0
     do while(ransq >= 1.0d0) 
-        ran1 = 1.0d0 - 2.0d0 * myrandom() ! seed)
-        ran2 = 1.0d0 - 2.0d0 * myrandom() ! seed)
+        ran1 = 1.0d0 - 2.0d0 * myrandom() 
+        ran2 = 1.0d0 - 2.0d0 * myrandom() 
         ransq = ran1*ran1 + ran2*ran2
     enddo
     ranh = 2.0d0*dsqrt(1.0d0-ransq)
@@ -183,7 +182,7 @@ subroutine ranor(v, seed)
     return
 end subroutine ranor
 
-double precision function myrandom()
+real(kind(1.0d0)) function myrandom()
     implicit none
     real r
     CALL random_number(r)
@@ -192,7 +191,7 @@ double precision function myrandom()
 end function myrandom
 
 subroutine uXv(u,v,w)
-    double precision u(3), v(3), w(3)
+    real(kind(1.0d0)) u(3), v(3), w(3)
         
     w(1) = u(2)*v(3)-u(3)*v(2)
     w(2) =-u(1)*v(3)+u(3)*v(1)
@@ -201,7 +200,7 @@ subroutine uXv(u,v,w)
 end subroutine uXv
 
 subroutine u1v(u,v)
-    double precision u(3),v(3)
+    real(kind(1.0d0)) u(3),v(3)
     if(dabs(u(1))+dabs(u(2))+dabs(u(3)) < 1d-10) then
         print*, 'zero unit vector in u1v. Aborting...'
         STOP
