@@ -28,15 +28,15 @@ module atoms
         !private
         character(CHARLEN) nam
         integer indx, typ, parent
-        double precision  x, y, z, mass, charge
-        double precision  vx,vy,vz
+        real(dblpr)  x, y, z, mass, charge
+        real(dblpr)  vx,vy,vz
     end type     
 contains
 ! public member functions 
 ! setters 
     subroutine atom_set_charge(c, at)
         implicit none
-        double precision c
+        real(dblpr) c
         type (ATOM_T) at        
         at%charge=c
         return
@@ -44,7 +44,7 @@ contains
 !---    
     subroutine atom_set_coor(rx, ry, rz, at)
         implicit none
-        double precision rx, ry, rz
+        real(dblpr) rx, ry, rz
         type (ATOM_T) at
         at%x=rx
         at%y=ry
@@ -54,7 +54,7 @@ contains
 !---    
     subroutine atom_set_vel(vx, vy, vz, at)
         implicit none
-        double precision vx, vy, vz
+        real(dblpr) vx, vy, vz
         type (ATOM_T) at
         at%vx=vx
         at%vy=vy
@@ -64,13 +64,13 @@ contains
 !---    
     subroutine atom_set_mass(m, at)
         implicit none
-        double precision m
+        real(dblpr) m
         type (ATOM_T) at        
         at%mass=m
         return
     end subroutine atom_set_mass
 ! getters
-    double precision function atom_get_charge(at)
+    real(dblpr) function atom_get_charge(at)
         implicit none
         type (ATOM_T) at        
         atom_get_charge=at%charge
@@ -79,7 +79,7 @@ contains
 !---    
     subroutine atom_get_coor(at, rx, ry, rz)
         implicit none
-        double precision rx, ry, rz
+        real(dblpr) rx, ry, rz
         type (ATOM_T) at
         rx=at%x
         ry=at%y
@@ -89,7 +89,7 @@ contains
 !---    
     subroutine atom_get_vel(at, vx, vy, vz)
         implicit none
-        double precision vx, vy, vz
+        real(dblpr) vx, vy, vz
         type (ATOM_T) at
         vx=at%vx
         vy=at%vy
@@ -97,49 +97,49 @@ contains
         return
     end subroutine atom_get_vel
 !---
-    double precision function atom_get_x(at)
+    real(dblpr) function atom_get_x(at)
         implicit none
         type (ATOM_T) at
         atom_get_x=at%x
         return
     end function atom_get_x
 !---
-    double precision function atom_get_y(at)
+    real(dblpr) function atom_get_y(at)
         implicit none
         type (ATOM_T) at
         atom_get_y=at%y
         return
     end function atom_get_y
 !---
-    double precision function atom_get_z(at)
+    real(dblpr) function atom_get_z(at)
         implicit none
         type (ATOM_T) at
         atom_get_z=at%z
         return
     end function atom_get_z
 !---
-    double precision function atom_get_vx(at)
+    real(dblpr) function atom_get_vx(at)
         implicit none
         type (ATOM_T) at
         atom_get_vx=at%vx
         return
     end function atom_get_vx
 !---
-    double precision function atom_get_vy(at)
+    real(dblpr) function atom_get_vy(at)
         implicit none
         type (ATOM_T) at
         atom_get_vy=at%vy
         return
     end function atom_get_vy
 !---
-    double precision function atom_get_vz(at)
+    real(dblpr) function atom_get_vz(at)
         implicit none
         type (ATOM_T) at
         atom_get_vz=at%vz
         return
     end function atom_get_vz
 !---    
-    double precision function atom_get_mass(at)
+    real(dblpr) function atom_get_mass(at)
         implicit none
         type (ATOM_T) at        
         atom_get_mass=at%mass
@@ -149,8 +149,8 @@ contains
     subroutine atom_pair_vec(a,b,c,v)
         implicit none
         type (ATOM_T) a,b
-        double precision c(3,3),v(3)
-        double precision dx,dy,dz       
+        real(dblpr) c(3,3),v(3)
+        real(dblpr) dx,dy,dz       
         dx=b%x-a%x
         v(X)=dx-dnint(dx/c(X,X))*c(X,X)
         dy=b%y-a%y
@@ -160,11 +160,11 @@ contains
         return
     end subroutine atom_pair_vec
 !---    
-    double precision function atom_pair_dist(a,b,c)
+    real(dblpr) function atom_pair_dist(a,b,c)
         implicit none
         type (ATOM_T) a,b
-        double precision c(3,3)
-        double precision dx,dy,dz       
+        real(dblpr) c(3,3)
+        real(dblpr) dx,dy,dz       
         dx=b%x-a%x
         dx=dx-dnint(dx/c(X,X))*c(X,X)
         dy=b%y-a%y
