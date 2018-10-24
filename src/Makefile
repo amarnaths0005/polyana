@@ -26,8 +26,8 @@
 program    = ../bin/polyana
 compiler   = gfortran
 #options    =-cpp
-#options    =-cpp -funroll-loops
-options    =-cpp -fopenmp -fbounds-check 
+options    =-cpp -funroll-loops
+#options    =-cpp -fopenmp -fbounds-check -std=f2003 -Wall -Wextra
 #options    =-cpp -fopenmp -fbounds-check -DSTREAMS
 # use this if your compiler is not 2003-compliant: 
 # options   =-cpp -DFORTRAN95
@@ -36,7 +36,7 @@ objects    = atoms.o groups.o molecules.o parameters.o polyana.o \
 modules    = atoms.mod groups.mod molecules.mod parameters.mod \
              process.mod strings.mod system.mod          
           
-# target for the executable
+# the target for the executable
 polyana: $(objects)
 #	$(compiler) -o $(program) $(objects)  
 	$(compiler) -o $(program) -fopenmp $(objects)  
@@ -88,6 +88,9 @@ clean: FORCE
 	
 cleanme: FORCE  
 	rm -f  $(objects) $(modules) ; \
+	rm -f  $(tab2plot) tab2plot.o ; \
+	rm -f  $(fixpot) fixpot.o ; \
+	rm -f  $(mc) montecarlo.o ; \
 	cd ../test ; \
 	chmod +x clean ; \
 	./clean     
