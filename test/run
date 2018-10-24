@@ -47,7 +47,7 @@ echo -e "\tSeven test cases are about to be analysed"
 if [ "$1" = "md" ] || [ "$2" = "md" ] 
 then
     echo -e "\tEach DL_POLY run will last no more than about 5 minutes"
-    echo "\t(except the last one that may take up to half an hour approx."
+    echo "\t(except the last one that may take up to half an hour approx.)"
 fi
 echo -e "\v\tEach polyana run will last only a few seconds to minutes"
 echo -e "\tA progress bar will be showing the elapsed time"
@@ -63,7 +63,7 @@ do
     if [ "$1" = "md" ] || [ "$2" = "md" ] 
     then
         rm -f HISTORY polyana.out OUTPUT POP RDF RDFDAT REVCON REVIVE \
-              STATIS STDOUT ZDEN ZDNDAT TABLE 
+              STATIS STDOUT ZDEN ZDNDAT TABLE CG_FIELD CG_CONFIG
         "$DLPOLY" &
         echo -e "\tDL_POLY running..."
         sleep 1
@@ -112,7 +112,7 @@ do
             echo -e "\v\tpolyana in " $testdir ": no CONTROL file found!"
             echo -e "\tCalculation will be carried out without directives"
         fi
-        rm -f polyana.out RDF POP TABLE STDOUT
+        rm -f polyana.out RDF POP TABLE CG_FIELD CG_CONFIG
     	$EXE > polyana.out &
         echo -e "\tpolyana running..."
         sleep 1
