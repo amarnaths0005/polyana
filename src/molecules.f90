@@ -27,8 +27,8 @@ module molecules
     type MOLECULE_T
         !private
         integer nat, typ, next ! next is to be used with groups
-        double precision x, y, z, mass ! centre of mass and MW
-        double precision vx,vy,vz
+        real(dblpr) x, y, z, mass ! centre of mass and MW
+        real(dblpr) vx,vy,vz
 #ifdef FORTRAN95
         type (ATOM_T) atom(MAXATMOL)
 #else        
@@ -36,7 +36,7 @@ module molecules
 #endif        
     end type     
     integer npbc ! must be hosted here because I cannot retrieve it from within system 
-    double precision cell(3,3), icell(3,3), detcell
+    real(dblpr) cell(3,3), icell(3,3), detcell
     private npbc, cell, icell, detcell
 contains
 ! public member functions 
@@ -50,7 +50,7 @@ contains
 !---
     subroutine molecule_set_mass(m, mol)
         implicit none
-        double precision m
+        real(dblpr) m
         type (MOLECULE_T) mol        
         mol%mass=m
         return
@@ -58,8 +58,7 @@ contains
 !---
     subroutine molecule_set_cm(cx, cy, cz, mol)
         implicit none
-        integer i,nat
-        double precision cx, cy, cz
+        real(dblpr) cx, cy, cz
         type (MOLECULE_T) mol     
         mol%x=cx
         mol%y=cy
@@ -69,8 +68,7 @@ contains
 !---
     subroutine molecule_set_vel(vx, vy, vz, mol)
         implicit none
-        integer i,nat
-        double precision vx, vy, vz
+        real(dblpr) vx, vy, vz
         type (MOLECULE_T) mol     
         mol%vx=vx
         mol%vy=vy
@@ -107,7 +105,7 @@ contains
 !---
     subroutine molecule_set_cell(c)
         implicit none
-        double precision c(3,3)
+        real(dblpr) c(3,3)
         cell=c
         CALL invert(c,icell,detcell)
         return
@@ -123,8 +121,6 @@ contains
 !---
     subroutine molecule_copy(from,to)
         implicit none
-        integer i
-        double precision charge,mass
         type (MOLECULE_T) from,to
         to%nat =from%nat
         to%typ =from%typ
@@ -137,8 +133,8 @@ contains
         if(.NOT. allocated(to%atom)) then
             allocate(to%atom(to%nat))
         else if(size(from%atom)/=size(to%atom)) then
-            write(mystdout,'(/T10"molecule_copy: size mismatch in atom arrays")')
-            write(mystdout,'( T10"source: ",I5,", destination: ",I5/)') &
+            write(mystdout,'(/T10,"molecule_copy: size mismatch in atom arrays")')
+            write(mystdout,'( T10,"source: ",I5,", destination: ",I5/)') &
             size(from%atom),size(to%atom)
             STOP
         endif
@@ -153,7 +149,7 @@ contains
         return
     end function system_get_npbc
 !---
-    double precision function molecule_get_mass(mol)
+    real(dblpr) function molecule_get_mass(mol)
         implicit none
         type (MOLECULE_T) mol        
         molecule_get_mass=mol%mass
@@ -162,7 +158,7 @@ contains
 !---
     subroutine molecule_get_cm(mol, rx, ry, rz)
         implicit none
-        double precision rx, ry, rz
+        real(dblpr) rx, ry, rz
         type (MOLECULE_T) mol        
         rx=mol%x
         ry=mol%y
@@ -172,7 +168,7 @@ contains
 !---
     subroutine molecule_get_vel(mol, vx, vy, vz)
         implicit none
-        double precision vx, vy, vz
+        real(dblpr) vx, vy, vz
         type (MOLECULE_T) mol        
         vx=mol%vx
         vy=mol%vy
@@ -196,7 +192,7 @@ contains
 !---    
     subroutine molecule_get_cell(c,ic,d)
         implicit none
-        double precision c(3,3),ic(3,3),d
+        real(dblpr) c(3,3),ic(3,3),d
         c =cell
         ic=icell
         d =detcell
@@ -215,10 +211,10 @@ contains
         implicit none
         integer i, nat, npbc
         type (MOLECULE_T) mol
-        double precision c(3,3),ic(3,3),rc(3,3),det
-        double precision b(3),d(3),u(3),v(3)
-        double precision r,s,sx,sy,xs,ys
-        double precision :: small=1.d-8
+        real(dblpr) c(3,3),ic(3,3),rc(3,3),det
+        real(dblpr) b(3),d(3),u(3),v(3)
+        real(dblpr) r,s,sx,sy,xs,ys
+        real(dblpr) :: small=1.d-8
         logical folded
         nat = molecule_get_nat(mol)
         npbc= system_get_npbc()
@@ -281,10 +277,10 @@ contains
 !---
     subroutine molecule_calc_cm(mol,com)
         implicit none
-        double precision, optional::com(3)
+        real(dblpr), optional::com(3)
         integer i, nat, npbc
-        double precision c(3,3),ic(3,3),rc(3,3),det 
-        double precision cm(3),mat,sx,sy,xs,ys
+        real(dblpr) c(3,3),ic(3,3),rc(3,3),det 
+        real(dblpr) cm(3),mat,sx,sy,xs,ys
         type (MOLECULE_T) mol
         ! First, calculate the cm using the UNFOLDED coordinates
         if(present(com)) then
@@ -328,9 +324,9 @@ contains
 !---
     subroutine molecule_calc_vel(mol,vel)
         implicit none
-        double precision, optional::vel(3)
+        real(dblpr), optional::vel(3)
         integer i, nat
-        double precision v(3),mat
+        real(dblpr) v(3),mat
         type (MOLECULE_T) mol
         ! calculate velocity based on total momentum
         if(present(vel)) then
@@ -351,12 +347,12 @@ contains
         return
     end subroutine molecule_calc_vel  
 !---
-    double precision function molecule_pair_distance(a, b)
+    real(dblpr) function molecule_pair_distance(a, b)
         implicit none
-        integer i, nat, npbc
+        integer npbc
         type (MOLECULE_T) a, b
-        double precision c(3,3),ic(3,3),rc(3,3),r(3),u(3),v(3)
-        double precision aa,bb,cc,dd,det,sx,sy,xs,ys
+        real(dblpr) c(3,3),ic(3,3),rc(3,3),r(3),u(3),v(3)
+        real(dblpr) det,sx,sy,xs,ys
         CALL molecule_get_cell(c,ic,det)
         CALL molecule_get_cm(a,u(X),u(Y),u(Z))
         CALL molecule_get_cm(b,v(X),v(Y),v(Z))        
@@ -391,8 +387,8 @@ contains
     subroutine molecule_new_cm(cx, cy, cz, mol)
         implicit none
         integer i,nat
-        double precision cx, cy, cz
-        double precision c(3,3),ic(3,3),rc(3,3),det,sx,sy,xs,ys,r(3)
+        real(dblpr) cx, cy, cz
+        real(dblpr) c(3,3),ic(3,3),rc(3,3),det,sx,sy,xs,ys,r(3)
         type (MOLECULE_T) mol     
         ! Force input com and apply PBCs to it
         CALL molecule_calc_cm(mol,(/cx,cy,cz/))                
