@@ -28,11 +28,11 @@ module system
     implicit none
     integer system_nat, system_nmol, system_nmoltyp,keytrj
     integer :: nstartread=0, nstopread=1E9, every=1, configuration=0 ! npbc moved to molecules
-    double precision system_volume
-    double precision :: rmax=huge(1.0d0) ! it will be redefined as min(rmax, other stuff)
-    logical :: smooth   =.FALSE. ! smooth g(r)
-    logical :: omades   =.FALSE. ! breakdown molecules into groups of atoms
-    logical :: totrdf   =.FALSE. ! compute total instead of intermolecular r.d.f.  
+    real(dblpr) system_volume
+    real(dblpr) :: rmax=huge(1.0d0) ! it will be reset to min(rmax, other stuff) during calculations
+    logical :: smooth   =.FALSE.    ! smooth g(r)
+    logical :: omades   =.FALSE.    ! breakdown molecules into groups of atoms
+    logical :: totrdf   =.FALSE.    ! compute total instead of intermolecular r.d.f.  
     type (MOLECULE_T), allocatable :: molecule(:)
     private system_nat, system_nmol, system_nmoltyp, system_volume
     private every, nstartread, nstopread, keytrj, configuration, smooth, rmax, totrdf
@@ -82,7 +82,7 @@ contains
     end subroutine system_set_every
 !---    
     subroutine system_calc_volume(cell)
-        double precision cell(3,3),volume
+        real(dblpr) cell(3,3),volume
         external volume    
         system_volume=volume(cell)
         return
@@ -152,7 +152,7 @@ contains
         return
     end function system_get_every
 !---    
-    double precision function system_get_volume()
+    real(dblpr) function system_get_volume()
         implicit none
         system_get_volume=system_volume
         return
@@ -176,7 +176,7 @@ contains
         return
     end function system_get_smooth
 !---    
-    double precision function system_get_rmax()
+    real(dblpr) function system_get_rmax()
         implicit none
         system_get_rmax=rmax
         return
@@ -188,9 +188,8 @@ contains
         integer io_fld
         integer,optional :: io_ctl
         integer i, j, nmol, moltyp, n, natmol, p
-        character(1) c
         character(8) kwd
-        double precision mass
+        real(dblpr) mass
         logical molecular_description,ok
         
         ! First pass: read nr of molecules and nr of molecule types and allocate molecules
@@ -288,8 +287,8 @@ contains
             if(.NOT. present(io_ctl) .OR. .NOT.ok) &
                 ok=group_setup(io_fld,molecule) ! if not found, search FIELD file
             if(.NOT.ok) then
-                write(mystdout,'(/T10"Warning: No groups definitions in CONTROL or FIELD, despite groups directive")')
-                write(mystdout,'(T10"Calculating centre-of-mass radial distribution functions instead"/)') 
+                write(mystdout,'(/T10,"Warning: No groups definitions in CONTROL or FIELD, despite groups directive")')
+                write(mystdout,'(T10,"Calculating centre-of-mass radial distribution functions instead"/)') 
                 nmol=system_get_nmol()
                 do i=1,nmol
                     CALL molecule_set_next(i+1,molecule(i))
@@ -328,9 +327,9 @@ contains
     logical function read_atom_records(io, imol, imoltot)
         implicit none
         integer io, ierr, imol, imoltot
-        integer found, i, irepeat, j, p
+        integer i, irepeat, j, p
         character(CHARLEN) atnam
-        double precision mass, charge
+        real(dblpr) mass, charge
         integer, save :: n, natmol
         logical, save :: read_atoms=.FALSE.
         
@@ -392,9 +391,8 @@ contains
     subroutine read_trj_header(io_history,io_config)
         implicit none
         integer, optional :: io_config
-        integer io_history,i,n,nat,j
-        logical infer
-        double precision a, b, c
+        integer io_history,i,n
+        real(dblpr) a, b, c
 #ifdef STREAMS
         if(.NOT.get_stream(io_history)) then ! end of file
             write(mystdout,'(/" read_trj_header: HISTORY end-of-file. Empty file??"/)')
@@ -433,11 +431,11 @@ contains
             if(.NOT. present(io_config)) then 
                 ! CONFIG file was missing; set PBCs to default value 
                 if(system_get_npbc()==NOTHING) then 
-                    write(mystdout,'(T10"Periodic boundary conditions set to parallelepiped")')
-                    write(mystdout,'(T10"To override, set PBC directive in CONTROL file and rerun"/)')
+                    write(mystdout,'(T10,"Periodic boundary conditions set to parallelepiped")')
+                    write(mystdout,'(T10,"To override, set PBC directive in CONTROL file and rerun"/)')
                     CALL system_set_npbc(PARALLELEPIPED)
                 else 
-                    write(mystdout,'(T10"Periodic boundary conditions set to ",I2," according to directive"/)') &
+                    write(mystdout,'(T10,"Periodic boundary conditions set to ",I2," according to directive"/)') &
                     system_get_npbc()
                 endif
             else
@@ -487,11 +485,11 @@ contains
             if(.NOT. present(io_config)) then 
                 ! CONFIG file was missing; set PBCs to default value 
                 if(system_get_npbc()==NOTHING) then 
-                    write(mystdout,'(T10"Periodic boundary conditions set to parallelepiped")')
-                    write(mystdout,'(T10"To override, set PBC directive in CONTROL file and rerun"/)')
+                    write(mystdout,'(T10,"Periodic boundary conditions set to parallelepiped")')
+                    write(mystdout,'(T10,"To override, set PBC directive in CONTROL file and rerun"/)')
                     CALL system_set_npbc(PARALLELEPIPED)
                 else 
-                    write(mystdout,'(T10"Periodic boundary conditions set to ",I2," according to directive"/)') &
+                    write(mystdout,'(T10,"Periodic boundary conditions set to ",I2," according to directive"/)') &
                     system_get_npbc()
                 endif
             else
@@ -522,9 +520,9 @@ contains
 !---
     logical function read_trj_step(io)
         implicit none
-        integer io, imol, iat, i, j, l, n, nat, natmol, nmol
-        double precision h1, h2, h3, rx, ry, rz, IwI, w(3), cell(3,3)
-        double precision vx, vy, vz
+        integer i, io, imol, iat,  j, nat, natmol, nmol
+        real(dblpr) h1, h2, h3, rx, ry, rz, IwI, w(3), cell(3,3)
+        real(dblpr) vx, vy, vz
 
         read_trj_step=.TRUE.
         ! First, skip the timestep record and read the cell tensor
