@@ -26,20 +26,20 @@ module process
     use system
     implicit none
     integer nr,ngrid,nthreads,leg_moltyp,leg_at1,leg_at2
-    double precision rmax, drtbl
-    double precision, allocatable :: rho1(:), hist(:,:,:),pdf(:,:,:)
-    double precision, allocatable :: shell_vol(:),ball_vol(:)
+    real(dblpr) rmax, drtbl
+    real(dblpr), allocatable :: rho1(:), hist(:,:,:),pdf(:,:,:)
+    real(dblpr), allocatable :: shell_vol(:), ball_vol(:)
     ! some default values 
-    double precision :: dr = 0.1d0       ! a 'small enough' (r,r+dr) thickness
+    real(dblpr) :: dr = 0.1d0            ! a 'small enough' (r,r+dr) thickness
     logical :: rmax_user_defined=.FALSE. ! flag to control rmax
     private dr, hist, nr, rho1, rmax, pdf, rmax_user_defined
 contains
     subroutine read_polyana_directives(io)
         implicit none
         integer io,p,nstart,nstop,n
-        double precision t,rcut
+        real(dblpr) t,rcut
         logical, save :: read_polyana=.FALSE.
-        logical :: read_rcut=.FALSE.
+        logical :: read_rcut=.FALSE.,read_rvdw=.FALSE.
         
         CALL system_set_npbc(NOTHING)
         do ! read lines from io file until EOF, and interpret them according to keywords contained therein
@@ -103,12 +103,12 @@ contains
                 p = find_keyword_value('omp',record) ! OpenMP: nr of threads
                 if(p>0) then                        
                     read(record(p:RECLEN),*) nthreads
-                    write(mystdout,'(//T10,"Number of threads: ",I3)') nthreads
+                    write(*,'(//T10,"Number of threads: ",I3)') nthreads
                 endif
                 p = find_keyword_value('threads',record) ! a synonym for omp
                 if(p>0) then                        
                     read(record(p:RECLEN),*) nthreads
-                    write(mystdout,'(//T10,"Number of threads: ",I3)') nthreads
+                    write(*,'(//T10,"Number of threads: ",I3)') nthreads
                 endif
             endif
         enddo
@@ -131,22 +131,21 @@ contains
             rho1  = 0.0d0
         endif
         CALL process_calc_shells()
-        ! allocate arrays useful in MSD calculation here (will be reallocated) 
     end subroutine process_setup_rdf
 !---
     logical function process_calc_rdf(operation)
         implicit none
-        integer n, nmol, a, b, i, j, nt, nconf,k
+        integer n, nmol, a, b, i, j, nt, nconf, k
         integer msd_alloc_dim,vel_alloc_dim,leg_alloc_dim
-        double precision r, dV
-        double precision v(3), cm(3), c(3,3), ic(3,3), detc
-        double precision, save :: volave=0.0d0
+        real(dblpr) r
+        real(dblpr) v(3), c(3,3), ic(3,3), detc
+        real(dblpr), save :: volave=0.0d0
         integer operation
         ! functions 
-        double precision volume, shell_volume
+        real(dblpr) volume, shell_volume
         external volume, shell_volume
         integer nm
-        double precision, allocatable :: priv_hist(:,:,:)
+        real(dblpr), allocatable :: priv_hist(:,:,:)
         integer, external :: omp_get_thread_num, omp_get_max_threads
         process_calc_rdf=.TRUE.
         if(mod(system_get_nconf(),system_get_every())/=0) &
@@ -171,11 +170,11 @@ contains
             volave=volave+system_get_volume()
             allocate(priv_hist(size(hist(:,1,1)),size(hist(1,:,1)),size(hist(1,1,:))))
             CALL omp_set_num_threads(nthreads)
-            !write(mystdout,'(//T10,"Number of threads: ",I3)') omp_get_max_threads()
+            !write(*,'(//T10,"Number of threads: ",I3)') omp_get_max_threads()
 !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(I,J,A,B,R,N,NM,PRIV_HIST)  
             priv_hist=0.0d0
             nm=nmol
-            !write(mystdout,'(T10,"This is thread Nr: ",I3)') omp_get_thread_num()
+            !write(*,'(T10,"This is thread Nr: ",I3)') omp_get_thread_num()
 !$OMP DO COLLAPSE(1) SCHEDULE(RUNTIME)
             do i=1,nm 
                 a=molecule_get_type(molecule(i))
@@ -202,17 +201,17 @@ contains
 !$OMP END PARALLEL  
             deallocate(priv_hist)
         else if(operation==AVERAGE) then ! it's the final countdown
-            write(mystdout,'(///)',advance='no')
+            write(*,'(///)',advance='no')
             nconf=min(system_get_nstop(),system_get_nconf())
             nconf=nconf-system_get_nstart()+1
             if(nconf<=0) then
-                write(mystdout,'(/" Nr of configurations <= 0 (",I12,")"/" Check your bounds! "/)') nconf
+                write(*,'(/" Nr of configurations <= 0 (",I12,")"/" Check your bounds! "/)') nconf
                 process_calc_rdf=.FALSE.
                 return
             endif
-            hist=hist/(dfloat(nconf)/dfloat(system_get_every())) ! average over configurations
+            hist=hist/(dble(nconf)/dble(system_get_every())) ! average over configurations
             ! average cell volume
-            volave=volave/(dfloat(nconf)/dfloat(system_get_every()))
+            volave=volave/(dble(nconf)/dble(system_get_every()))
             do i=1,nmol
                 a=molecule_get_type(molecule(i))
                 rho1(a)=rho1(a)+1.0d0
@@ -240,9 +239,9 @@ contains
 !---
     subroutine process_print_rdf(io)
         implicit none
-        integer io,i,a,b,k,n,nt,nloopstart
-        double precision r
-        double precision, allocatable :: tmpgr(:)
+        integer io,i,a,b,n,nt,nloopstart
+        real(dblpr) r
+        real(dblpr), allocatable :: tmpgr(:)
         ! sum up histogram to compute population of species 'b' around 
         ! species 'a' within a given radius
         if(io==POP) then
@@ -304,7 +303,7 @@ contains
                     write(io,'(1X,F9.3)',advance="no") pdf(a,a,n)
                 else if(io==POP) then ! population of species b around species a 
                     write(io,'(1X,F9.3)',advance="no") hist(a,a,n)*(4.0d0*PI*(n*dr)**3/3.0d0) &
-                                                                  /ball_vol(n)
+                                                                  /ball_vol(n)  ! correction for distances > L/2
                 endif
             enddo
             write(io,'(3X)',advance="no")
@@ -318,7 +317,7 @@ contains
                             write(io,'(1X,F9.3)',advance="no") pdf(a,b,n)
                         else if(io==POP) then ! population of species b around species a 
                             write(io,'(1X,F9.3)',advance="no") hist(a,b,n)*(4.0d0*PI*(n*dr)**3/3.0d0) &
-                                                                          /ball_vol(n)
+                                                                          /ball_vol(n)  ! correction for distances > L/2
                         endif
                     endif
                 enddo
@@ -336,7 +335,7 @@ contains
         ! I need volumes of shells defined by r-dr and r+dr for a given dr  
         implicit none
         integer i,n
-        double precision c(3,3),ic(3,3),d,r_min,r_max,r_max_1,r_max_2,rlo,rhi
+        real(dblpr) c(3,3),ic(3,3),d,r_min,r_max,r_max_1,r_max_2,rhi
         CALL molecule_get_cell(c,ic,d)
         r_min=0.5d0*dr
         r_max=0.5d0*c(X,X)
@@ -364,10 +363,10 @@ contains
         return
     end subroutine process_calc_shells   
 !---
-    double precision function process_sphere_vol(r,r_max,r_max_1,r_max_2)
+    real(dblpr) function process_sphere_vol(r,r_max,r_max_1,r_max_2)
         implicit none
-        double precision r,r_max,r_max_1,r_max_2
-        double precision lambda,t1,t2,t3,v
+        real(dblpr) r,r_max,r_max_1,r_max_2
+        real(dblpr) lambda,t1,t2,t3,v
         if(r<r_max) then
             v=4.0d0*PI*r**3/3.0d0
         else if(r<r_max_1) then
