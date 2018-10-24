@@ -42,24 +42,24 @@ program polyana
         CALL read_polyana_directives(CONTROL)
         close(unit=CONTROL)     
     else
-        write(mystdout,'(/T10"CONTROL file missing")')
-        write(mystdout,'(T10"Default values will be used; no coarse-graining, no tabulated potential"/)')
+        write(mystdout,'(/T10,"CONTROL file missing")')
+        write(mystdout,'(T10,"Default values will be used; no coarse-graining, no tabulated potential"/)')
     endif
     
     ! check for necessary files 
     inquire(file='FIELD',EXIST=field_exists)
     if(.NOT. field_exists) &
-        write(mystdout,'(/T10"FIELD file missing")')
+        write(mystdout,'(/T10,"FIELD file missing")')
 #ifdef STREAMS
     history_exists=.TRUE.
 #else    
     inquire(file='HISTORY',EXIST=history_exists)
     if(.NOT. history_exists) &
-        write(mystdout,'(/T10"HISTORY file missing")')
+        write(mystdout,'(/T10,"HISTORY file missing")')
 #endif        
 !    if((.NOT. field_exists) .OR. (.NOT. config_exists) .OR. (.NOT. history_exists)) then
     if((.NOT. field_exists) .OR. (.NOT. history_exists)) then
-        write(mystdout,'(T10"Cannot process trajectory; aborting..."/)')
+        write(mystdout,'(T10,"Cannot process trajectory; aborting..."/)')
         STOP
     endif
     
@@ -89,7 +89,7 @@ program polyana
 #endif        
         close(unit=CFG) 
     else 
-        write(mystdout,'(/T10"CONFIG file missing")')
+        write(mystdout,'(/T10,"CONFIG file missing")')
 #ifdef STREAMS
         CALL read_trj_header(STDIN  )
 #else
@@ -114,8 +114,8 @@ program polyana
     enddo
     CALL cpu_time(finish)
     CALL system_clock ( clck_counts_end, clck_rate )
-    write(mystdout,'(//T10"Trajectory processed.    CPU time:",F12.5)') finish-start         
-    write(mystdout,'( /T10"                      System time:",F12.5)') &
+    write(mystdout,'(//T10,"Trajectory processed.    CPU time:",F12.5)') finish-start         
+    write(mystdout,'( /T10,"                      System time:",F12.5)') &
     (clck_counts_end - clck_counts_beg) / real (clck_rate)
     if(.NOT.process_calc_rdf(AVERAGE)) & ! average, normalise etc.
         STOP 'failed to average rdf''s'
