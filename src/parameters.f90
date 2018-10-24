@@ -23,6 +23,7 @@
 !
 module parameters
     implicit none
+    integer, parameter :: dblpr=kind(1.0d0) ! double precision
     integer, parameter :: NOTHING=-1000
     integer, parameter :: CONTROL=10,FIELD=11,HISTORY=12,RDF=13,POP=14,CFG=15,REVCON=16
     integer, parameter :: POLYOUT=30
@@ -32,7 +33,7 @@ module parameters
     integer, parameter :: MAXATMOL=250 ! max nr of atoms in a molecule; used when FORTRAN95 cpp macro is defined 
     integer, parameter :: NOPBC=0,CUBIC=1,ORTHORHOMBIC=2,PARALLELEPIPED=3,SLAB=6
     integer, parameter :: OCTAHEDRAL=4,DODECAHEDRAL=5,HEXAGONAL=7 ! not implemented yet
-    double precision, parameter :: PI=3.14159265358979323846D0
+    real(dblpr), parameter :: PI=3.14159265358979323846D0
     ! global variables here
     integer mystdout
 end module parameters
