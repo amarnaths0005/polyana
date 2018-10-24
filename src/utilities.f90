@@ -21,10 +21,10 @@
 !
 !-----------------------------------------------------------------------
 !
-double precision function shell_volume(rlo,rup)
+real(kind(1.0d0)) function shell_volume(rlo,rup)
     implicit none
-    double precision rlo,rup
-    double precision, parameter :: PI=3.14159265358979323846d0
+    real(kind(1.0d0)) rlo,rup
+    real(kind(1.0d0)), parameter :: PI=3.14159265358979323846d0
     rlo=dmax1(rlo,0.0d0)
     shell_volume=(4.0d0/3.0d0)*PI*(rup**3-rlo**3)
     return    
@@ -33,7 +33,7 @@ end function shell_volume
 subroutine mtv(m, u, v)
     ! matrix times vector
     implicit none
-    double precision m(3,3), u(3), v(3), tmp(3)
+    real(kind(1.0d0)) m(3,3), u(3), v(3), tmp(3)
     tmp(1) = m(1,1)*u(1) + m(2,1)*u(2) + m(3,1)*u(3)
     tmp(2) = m(1,2)*u(1) + m(2,2)*u(2) + m(3,2)*u(3)
     tmp(3) = m(1,3)*u(1) + m(2,3)*u(2) + m(3,3)*u(3)
@@ -47,7 +47,7 @@ subroutine invert(a,b,d)
     ! code, developed by William Smith
     implicit none
 
-    double precision a(3,3),b(3,3),d
+    real(kind(1.0d0)) a(3,3),b(3,3),d
 
     ! calculate adjoint matrix
     b(1,1) = a(2,2)*a(3,3) - a(2,3)*a(3,2)
@@ -71,9 +71,9 @@ subroutine invert(a,b,d)
     return
 end subroutine invert
 !---
-double precision function volume(cell)
+real(kind(1.0d0)) function volume(cell)
     ! calculates volume of simulation cell - generic parallelepiped case
-    double precision cell(3,3), b(3), h(3)
+    real(kind(1.0d0)) cell(3,3), b(3), h(3)
     
     ! height
     h(:) = cell(:,3)
@@ -91,7 +91,7 @@ end function volume
 !---
 subroutine uXv(u,v,w) ! NEW
     ! returns (w) the cross product of u and v
-    double precision u(3), v(3), w(3)
+    real(kind(1.0d0)) u(3), v(3), w(3)
 
     w(1) = u(2)*v(3) - u(3)*v(2)
     w(2) = u(3)*v(1) - u(1)*v(3)
@@ -107,9 +107,9 @@ subroutine ranor(v) !, seed)
     ! 2. Frenkel & Smit: 'Understanding Molecular Simulation', Academic Press, 1996
     implicit none
     
-    double precision v(3)
+    real(kind(1.0d0)) v(3)
     ! integer seed
-    double precision r, ran1, ran2, ranh, ransq, myrandom
+    real(kind(1.0d0)) ran1, ran2, ranh, ransq, myrandom
     external myrandom
     
     ransq = 2.0d0
@@ -126,7 +126,7 @@ subroutine ranor(v) !, seed)
     return
 end subroutine ranor
 !---
-double precision function myrandom()
+real(kind(1.0d0)) function myrandom()
     implicit none
     real r
     CALL random_number(r)
