@@ -27,7 +27,7 @@ module system
     use groups
     implicit none
     integer system_nat, system_nmol, system_nmoltyp,keytrj
-    integer :: nstartread=0, nstopread=1E9, every=1, configuration=0 ! npbc moved to molecules
+    integer :: nstartread=0, nstopread=1000000000, every=1, configuration=0 ! npbc moved to molecules
     real(dblpr) system_volume
     real(dblpr) :: rmax=huge(1.0d0) ! it will be reset to min(rmax, other stuff) during calculations
     logical :: smooth   =.FALSE.    ! smooth g(r)
@@ -394,6 +394,7 @@ contains
         integer io_history,i,n
         real(dblpr) a, b, c
 #ifdef STREAMS
+        integer j,nat
         if(.NOT.get_stream(io_history)) then ! end of file
             write(mystdout,'(/" read_trj_header: HISTORY end-of-file. Empty file??"/)')
             STOP
