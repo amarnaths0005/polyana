@@ -28,7 +28,7 @@ module strings
     integer, parameter :: EOF=0, Cancel=3, newl=10
     integer, parameter :: stdin=5, stdout=6
     character(RECLEN) record
-    private stdin, stdout
+    !private stdin, stdout
 contains
     character(1) function fgetc(io)
         integer :: io   
