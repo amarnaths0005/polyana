@@ -11,9 +11,9 @@ The POLYANA team
 
     polyana.software@gmail.com  
   
-**Version**        :   2.0.0  
+**Version**        :   2.0.1  
 
-**Release date**   :   January 30th, 2018  
+**Release date**   :   April 23rd, 2019  
 
 **Web site**       :   http://cag.dat.demokritos.gr/Software.mol.php  
 
@@ -33,7 +33,7 @@ The POLYANA team
 
 ## 1. Introduction
 This  file  contains information  about 'POLYANA',  a program  that reads output 
-created by DL\_POLY Molecular Dynamics suite ('Classic' version)[1] and computes 
+created by DL\_POLY Molecular Dynamics suite ('Classic' version) [1] and returns 
 radial distribution functions  for centres of mass  of groups of atoms  or whole 
 molecules. It has been designed with simplicity of use in mind: just press Enter 
 and the program  will read DL\_POLY input  and output files  (CONTROL, FIELD and 
@@ -67,8 +67,8 @@ In a nutshell:
 
 * Minor bugfixes and improved input facility<sup>[1](#fn1)</sup>.  
 
-POLYANA's previous version was mainly intended for radial distribution functions 
-of molecular *centres of mass*[2]. However, it was possible to 'hack' POLYANA by 
+POLYANA's last version [2] was mainly intended for radial distribution functions 
+of molecular *centres of mass*.  However,  it was possible  to 'hack' POLYANA by 
 appropriately editing the atoms definitions in the DL\_POLY's FIELD file to mask 
 certain  atom types  and compute g(r)'s  for groups of atoms  rather than  whole 
 molecules.  The current version [3] provides an explicit mechanism to let users 
@@ -636,7 +636,7 @@ Please refer to our most recent publication, number 3 in previous section.
 
 ### License
 
-Copyright (c) 2015-2018 Vasilios E. Raptis <polyana.software@gmail.com>  
+Copyright (c) 2015-2019 Vasilios E. Raptis <polyana.software@gmail.com>  
 
 Permission is hereby granted, free of charge, to any person obtaining a 
 copy of this software and associated documentation files (the "Software"), 
