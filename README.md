@@ -33,7 +33,7 @@ The POLYANA team
 
 ## 1. Introduction
 This  file  contains information  about 'POLYANA',  a program  that reads output 
-created by  DL\_POLY Molecular Dynamics suite  ('Classic' version)  and computes 
+created by DL\_POLY Molecular Dynamics suite ('Classic' version)[1] and computes 
 radial distribution functions  for centres of mass  of groups of atoms  or whole 
 molecules. It has been designed with simplicity of use in mind: just press Enter 
 and the program  will read DL\_POLY input  and output files  (CONTROL, FIELD and 
@@ -68,23 +68,23 @@ In a nutshell:
 * Minor bugfixes and improved input facility<sup>[1](#fn1)</sup>.  
 
 POLYANA's previous version was mainly intended for radial distribution functions 
-of molecular  *centres of mass*.  However,  it was possible to 'hack' POLYANA by 
+of molecular *centres of mass*[2]. However, it was possible to 'hack' POLYANA by 
 appropriately editing the atoms definitions in the DL\_POLY's FIELD file to mask 
 certain  atom types  and compute g(r)'s  for groups of atoms  rather than  whole 
-molecules. The current version provides an explicit mechanism to let user define 
-groups of atoms  by inserting a definition  with the appropriate syntax in FIELD 
-and a novel directive (*group*) in CONTROL file; DL\_POLY will simply ignore any 
-such definition in FIELD. As regards the distance over which radial distribution 
-functions extend, POLYANA relies on an observation by Theodorou and Suter (in *J. 
-Chem. Phys.*, **1985**, *82*, 955)  so as to extend the calculation  beyond half 
-the shortest simulation cell length by computing the correct differential volume 
-with distance.  As a means of tighter integration with DL\_POLY,  POLYANA can be 
-combined with it in the style of Unix pipes to allow 'on the fly' processing  of 
-MD trajectories (to do this DL\_POLY has to be minimally modified and rebuilt so 
-that it directs trajectory data to standard output  instead of writing a HISTORY 
-file). Finally, POLYANA allows multithreaded (OpenMP) parallel execution.  Users 
-can compare time measurement displayed with the end of the calculations to check 
-performance with number of threads.  
+molecules.  The current version [3] provides an explicit mechanism to let users 
+define groups of atoms  by inserting  a definition  with the appropriate syntax 
+in FIELD and a novel directive  (*group*) in CONTROL file;  DL\_POLY will simply 
+ignore any such definition in FIELD.  As regards the distance  over which radial 
+distribution functions extend, POLYANA relies on an observation by Theodorou and 
+Suter [4]  so as to extend  the calculation beyond  half the shortest simulation
+cell length  by computing  the correct differential volume  with distance.  As a 
+means of tighter integration with DL\_POLY,  POLYANA  can be combined with it in 
+the style of Unix pipes to allow 'on the fly' processing  of MD trajectories (to 
+do this, DL\_POLY has to be minimally modified and rebuilt  so that it redirects 
+trajectory data to standard output  instead of writing a HISTORY file). Finally, 
+POLYANA allows multithreaded (OpenMP) parallel execution. Users can compare time 
+measurement displayed with the end of the calculations to check performance with 
+number of threads.  
 
 
 ### Requirements
@@ -235,7 +235,7 @@ All POLYANA directives are listed below in alphabetical order:
     every *n*     | Calculate every n-th step (time saver for long trajectories)
     group [total] | Compute g(r) for user-defined groups rather than molecules
     omp  *n*      | Sets the number of OpenMP threads
-    pbc  *n*         | Sets periodic boundary conditions to one of the following:
+    pbc  *n*      | Sets periodic boundary conditions to one of the following:
         0         | no pbc's 
         1         | cubic
         2         | orthorhombic
@@ -243,7 +243,7 @@ All POLYANA directives are listed below in alphabetical order:
         6         | slab
     polyana       | Marks the beginning of section containing POLYANA directives
     rmax *r*      | Maximum distance for g(r) calculations
-    smooth        | Smooth g(r) as in Allen & Tildesley, 1989, pp. 203-204
+    smooth        | Smooth g(r) as in Allen & Tildesley, 1989, pp. 203-204 [5]
     start *n*     | Skip steps 1 to n-1 and process from n-th and beyond
     stop  *n*     | Skip (don't process) configurations beyond the n-th
     threads *n*   | A synonym for 'omp'
@@ -417,9 +417,9 @@ the relevant above examples can be rewritten as follows:
 
 #### Example: mixtures
         
-Let's take a real-life example and assume we are using the well-known TraPPE and 
-SPC/E force fields to model a n-butanol-1/water system, so that FIELD file looks 
-more or less like this:  
+Let's take a real-life example and assume we are using the well-known TraPPE [6]
+and SPC/E [7] force fields to model a n-butanol-1/water system so the FIELD file 
+looks more or less like this:  
 
     ...  
     MOLECULES      2  
@@ -620,14 +620,19 @@ added to POLYANA's quiver. The most important new functions include
 1. W. Smith, T. Forester *J. Mol. Graph.*, **1996**, *14*, 136.  
 2. C. Dimitroulis, T. Raptis, V. Raptis *Comp. Phys. Commun.*, **2015**, *197*,
    220-226.  
-3. D.N. Theodorou, U.W. Suter, *J. Chem. Phys.*, **1985**, *82*, 955.  
-4. M.P. Allen, D.J. Tildesley, Computer Simulation of Liquids, Oxford University 
+3. V. Raptis, C. Dimitroulis, T. Raptis *Mol. Simul.*, **2019**, 
+   DOI: 0.1080/08927022.2019.1603379  
+4. D.N. Theodorou, U.W. Suter, *J. Chem. Phys.*, **1985**, *82*, 955.  
+5. M.P. Allen, D.J. Tildesley, Computer Simulation of Liquids, Oxford University 
    Press, Oxford, 1989.  
-5. B. Chen, J. Potoff, J. Siepmann *J. Phys. Chem. B*, **2001**, *105*, 3093.  
-6. H. Berendsen, J. Grigera, T. Straatsma *J. Phys. Chem.* **1987**, *91*, 6269.  
+6. B. Chen, J. Potoff, J. Siepmann *J. Phys. Chem. B*, **2001**, *105*, 3093.  
+7. H. Berendsen, J. Grigera, T. Straatsma *J. Phys. Chem.* **1987**, *91*, 6269.  
 
 ## 10. Legal stuff, etc.
-Polyana is a program for computing molecular pair distribution functions  
+Polyana is a program for computing molecular pair distribution functions.  
+
+### How to cite
+Please refer to our most recent publication, number 3 in previous section.  
 
 ### License
 
