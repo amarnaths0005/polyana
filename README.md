@@ -583,7 +583,7 @@ Thus:
     
 means that the second column of RDF  (pertinent to the first pair of species) is 
 to be plotted with respect to distance (first column) and the y-scale will range
-from 0 to 1.5. Of course, the generated gnuplot script, rdfplot.gp, can be modi-
+from 0 to 1.5. Of course, the generated gnuplot script, rdfplot.gp,  can be modi
 fied by the users as they see fit.  
  
 ## 8. Future goals 
@@ -636,7 +636,7 @@ Please refer to our most recent publication, number 3 in previous section.
 
 ### License
 
-Copyright (c) 2015-2019 Vasilios E. Raptis <polyana.software@gmail.com>  
+Copyright (c) 2015-2020 Vasilios E. Raptis <polyana.software@gmail.com>  
 
 Permission is hereby granted, free of charge, to any person obtaining a 
 copy of this software and associated documentation files (the "Software"), 
